@@ -1,0 +1,4 @@
+module SwtBridgeC {
+    header "swt_bridge_c.h"
+    export *
+}

@@ -1,6 +1,6 @@
 # Offline Workout Tracker
 
-A minimal, offline-first workout tracker. Built with a shared C++ core library, an Android app (Kotlin/Jetpack Compose), and a cross-platform desktop GUI (ImGui).
+A minimal, offline-first workout tracker. Built with a shared C++ core library, with native apps for Android (Kotlin/Jetpack Compose), iOS (SwiftUI), and desktop (ImGui).
 
 <p align="center">
   <img src="screenshots/Workout.png" alt="Active workout" width="270">
@@ -27,6 +27,7 @@ A minimal, offline-first workout tracker. Built with a shared C++ core library, 
 The core logic lives in a shared C++ library (`lib/`) backed by SQLite. This library is used by:
 
 - **Android app** — Kotlin + Jetpack Compose, calls the C++ lib via JNI
+- **iOS app** — SwiftUI, calls the C++ lib via a C bridge
 - **Desktop GUI** — cross-platform ImGui + OpenGL interface
 - **TUI** — terminal interface for desktop use
 
@@ -54,6 +55,12 @@ The core logic lives in a shared C++ library (`lib/`) backed by SQLite. This lib
 - Gradle 8.11+
 - Kotlin 2.1 + Jetpack Compose
 - Java 17
+
+### iOS app (`ios/`)
+
+- Xcode 15+ (Swift 5.9+)
+- iOS 15.0+ deployment target
+- [XcodeGen](https://github.com/yonaskolb/XcodeGen) (for project generation)
 
 ## Building
 
@@ -87,6 +94,16 @@ build-windows.bat debug      # debug build
 ```
 
 The script downloads the SQLite amalgamation automatically on first run.
+
+### iOS
+
+```sh
+cd ios
+./setup.sh                  # download SQLite + generate Xcode project
+open SimpleWorkoutTracker.xcodeproj
+```
+
+Requires [XcodeGen](https://github.com/yonaskolb/XcodeGen): `brew install xcodegen`
 
 ## License
 

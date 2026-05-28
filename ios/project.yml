@@ -1,0 +1,61 @@
+name: SimpleWorkoutTracker
+options:
+  bundleIdPrefix: com.timsippell
+  deploymentTarget:
+    iOS: "15.0"
+  xcodeVersion: "15.0"
+
+settings:
+  base:
+    CLANG_CXX_LANGUAGE_STANDARD: gnu++20
+    SWIFT_VERSION: "5.9"
+    SWIFT_OBJC_BRIDGING_HEADER: ""
+
+targets:
+  SimpleWorkoutTracker:
+    type: application
+    platform: iOS
+    sources:
+      - path: SimpleWorkoutTracker/App
+      - path: SimpleWorkoutTracker/Bridge/SwtBridge.swift
+      - path: SimpleWorkoutTracker/Bridge/swt_bridge_c.cpp
+        buildPhase: sources
+      - path: SimpleWorkoutTracker/Models
+      - path: SimpleWorkoutTracker/Views
+      - path: SimpleWorkoutTracker/Assets.xcassets
+      # C++ core library sources (referenced, not copied)
+      - path: ../lib/src/database.cpp
+        buildPhase: sources
+      - path: ../lib/src/repository.cpp
+        buildPhase: sources
+      - path: ../lib/src/calculator.cpp
+        buildPhase: sources
+      - path: ../lib/src/converter.cpp
+        buildPhase: sources
+      - path: ../lib/src/defaults.cpp
+        buildPhase: sources
+      - path: ../lib/src/data_io.cpp
+        buildPhase: sources
+      # Bundled SQLite
+      - path: sqlite3/sqlite3.c
+        buildPhase: sources
+        compilerFlags: ["-w"]
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.timsippell.swt
+        INFOPLIST_GENERATION_MODE: GeneratedFile
+        MARKETING_VERSION: "1.0.0"
+        CURRENT_PROJECT_VERSION: "1"
+        HEADER_SEARCH_PATHS:
+          - $(SRCROOT)/../lib/include
+          - $(SRCROOT)/sqlite3
+          - $(SRCROOT)/SimpleWorkoutTracker/Bridge
+        SWIFT_INCLUDE_PATHS:
+          - $(SRCROOT)/SimpleWorkoutTracker/Bridge
+        OTHER_CFLAGS: ["-DSQLITE_THREADSAFE=0"]
+        GENERATE_INFOPLIST_FILE: YES
+        INFOPLIST_KEY_UIApplicationSceneManifest_Generation: YES
+        INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents: YES
+        INFOPLIST_KEY_UILaunchScreen_Generation: YES
+        INFOPLIST_KEY_UISupportedInterfaceOrientations: "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight"
+        INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad: "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight"
