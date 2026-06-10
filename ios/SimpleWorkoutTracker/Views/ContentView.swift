@@ -5,6 +5,7 @@ enum Tab: String, CaseIterable {
     case workout = "Workout"
     case history = "History"
     case progress = "Progress"
+    case share = "Share"
     case settings = "Settings"
 
     var icon: String {
@@ -13,6 +14,7 @@ enum Tab: String, CaseIterable {
         case .workout: return "figure.strengthtraining.traditional"
         case .history: return "clock"
         case .progress: return "chart.line.uptrend.xyaxis"
+        case .share: return "antenna.radiowaves.left.and.right"
         case .settings: return "gearshape"
         }
     }
@@ -52,6 +54,12 @@ struct ContentView: View {
             }
             .tabItem { Label(Tab.progress.rawValue, systemImage: Tab.progress.icon) }
             .tag(Tab.progress)
+
+            NavigationStack {
+                ShareView()
+            }
+            .tabItem { Label(Tab.share.rawValue, systemImage: Tab.share.icon) }
+            .tag(Tab.share)
 
             NavigationStack {
                 SettingsView(onNavigateToSetup: { showSetup = true })

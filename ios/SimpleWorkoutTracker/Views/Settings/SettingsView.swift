@@ -42,6 +42,10 @@ struct SettingsView: View {
             }
 
             Section {
+                Link("Privacy Policy", destination: URL(string: "https://github.com/TimSippell/offline-workout-tracker/blob/main/PRIVACY_POLICY.md")!)
+            }
+
+            Section {
                 Button("Reset All Data", role: .destructive) { showResetAlert = true }
             } header: {
                 Text("Danger Zone")

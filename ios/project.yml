@@ -15,6 +15,11 @@ targets:
   SimpleWorkoutTracker:
     type: application
     platform: iOS
+    info:
+      properties:
+        NSBonjourServices:
+          - _owt-share._tcp
+          - _owt-share._udp
     sources:
       - path: SimpleWorkoutTracker/App
       - path: SimpleWorkoutTracker/Bridge/SwtBridge.swift
@@ -54,6 +59,7 @@ targets:
           - $(SRCROOT)/SimpleWorkoutTracker/Bridge
         OTHER_CFLAGS: ["-DSQLITE_THREADSAFE=0"]
         GENERATE_INFOPLIST_FILE: YES
+        INFOPLIST_KEY_NSLocalNetworkUsageDescription: "Share workout data with nearby devices"
         INFOPLIST_KEY_UIApplicationSceneManifest_Generation: YES
         INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents: YES
         INFOPLIST_KEY_UILaunchScreen_Generation: YES
