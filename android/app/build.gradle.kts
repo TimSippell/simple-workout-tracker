@@ -30,8 +30,8 @@ android {
         applicationId = "com.timsippell.owt"
         minSdk = 26
         targetSdk = 35
-        versionCode = 8
-        versionName = "1.3.2"
+        versionCode = 9
+        versionName = "1.3.3"
 
         ndk {
             abiFilters += listOf("arm64-v8a", "x86_64")
