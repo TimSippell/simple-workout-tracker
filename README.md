@@ -100,7 +100,7 @@ The script downloads the SQLite amalgamation automatically on first run.
 ```sh
 cd ios
 ./setup.sh                  # download SQLite + generate Xcode project
-open SimpleWorkoutTracker.xcodeproj
+open OfflineWorkoutTracker.xcodeproj
 ```
 
 Requires [XcodeGen](https://github.com/yonaskolb/XcodeGen): `brew install xcodegen`

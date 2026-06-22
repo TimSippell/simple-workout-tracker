@@ -1,0 +1,4 @@
+module OwtBridgeC {
+    header "owt_bridge_c.h"
+    export *
+}

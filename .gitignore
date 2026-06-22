@@ -17,3 +17,23 @@ android/app/src/main/cpp/sqlite3.h
 android/gradle/wrapper/gradle-wrapper.jar
 *.apk
 *.jks
+android/keystore.properties
+android/app/google-services.json
+
+# Secrets / credentials
+.env
+.env.*
+!.env.example
+*.keystore
+*.p12
+*.pfx
+*.pem
+*.key
+*.cer
+*.der
+*.mobileprovision
+*.provisionprofile
+secrets.*
+**/*secret*
+**/*credentials*
+GoogleService-Info.plist

@@ -1,8 +1,8 @@
-name: SimpleWorkoutTracker
+name: OfflineWorkoutTracker
 options:
   bundleIdPrefix: com.timsippell
   deploymentTarget:
-    iOS: "15.0"
+    iOS: "16.0"
   xcodeVersion: "15.0"
 
 settings:
@@ -12,22 +12,23 @@ settings:
     SWIFT_OBJC_BRIDGING_HEADER: ""
 
 targets:
-  SimpleWorkoutTracker:
+  OfflineWorkoutTracker:
     type: application
     platform: iOS
     info:
+      path: OfflineWorkoutTracker/Info.plist
       properties:
         NSBonjourServices:
           - _owt-share._tcp
           - _owt-share._udp
     sources:
-      - path: SimpleWorkoutTracker/App
-      - path: SimpleWorkoutTracker/Bridge/SwtBridge.swift
-      - path: SimpleWorkoutTracker/Bridge/swt_bridge_c.cpp
+      - path: OfflineWorkoutTracker/App
+      - path: OfflineWorkoutTracker/Bridge/OwtBridge.swift
+      - path: OfflineWorkoutTracker/Bridge/owt_bridge_c.cpp
         buildPhase: sources
-      - path: SimpleWorkoutTracker/Models
-      - path: SimpleWorkoutTracker/Views
-      - path: SimpleWorkoutTracker/Assets.xcassets
+      - path: OfflineWorkoutTracker/Models
+      - path: OfflineWorkoutTracker/Views
+      - path: OfflineWorkoutTracker/Assets.xcassets
       # C++ core library sources (referenced, not copied)
       - path: ../lib/src/database.cpp
         buildPhase: sources
@@ -47,16 +48,18 @@ targets:
         compilerFlags: ["-w"]
     settings:
       base:
-        PRODUCT_BUNDLE_IDENTIFIER: com.timsippell.swt
+        PRODUCT_BUNDLE_IDENTIFIER: com.timsippell.owt
+        DEVELOPMENT_TEAM: 3LRV32PC6Q
+        CODE_SIGN_STYLE: Automatic
         INFOPLIST_GENERATION_MODE: GeneratedFile
         MARKETING_VERSION: "1.0.0"
         CURRENT_PROJECT_VERSION: "1"
         HEADER_SEARCH_PATHS:
           - $(SRCROOT)/../lib/include
           - $(SRCROOT)/sqlite3
-          - $(SRCROOT)/SimpleWorkoutTracker/Bridge
+          - $(SRCROOT)/OfflineWorkoutTracker/Bridge
         SWIFT_INCLUDE_PATHS:
-          - $(SRCROOT)/SimpleWorkoutTracker/Bridge
+          - $(SRCROOT)/OfflineWorkoutTracker/Bridge
         OTHER_CFLAGS: ["-DSQLITE_THREADSAFE=0"]
         GENERATE_INFOPLIST_FILE: YES
         INFOPLIST_KEY_NSLocalNetworkUsageDescription: "Share workout data with nearby devices"

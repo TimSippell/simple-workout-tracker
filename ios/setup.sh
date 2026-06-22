@@ -9,6 +9,8 @@ if [ -f "$SQLITE_DIR/sqlite3.c" ] && [ -f "$SQLITE_DIR/sqlite3.h" ]; then
     exit 0
 fi
 
+mkdir -p "$SQLITE_DIR"
+
 echo "Downloading SQLite amalgamation..."
 SQLITE_VERSION="3460000"
 SQLITE_URL="https://www.sqlite.org/2024/sqlite-amalgamation-${SQLITE_VERSION}.zip"
