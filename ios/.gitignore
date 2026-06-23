@@ -3,5 +3,7 @@
 xcuserdata/
 DerivedData/
 build/
+*.ipa
+*.xcarchive/
 sqlite3/sqlite3.c
 sqlite3/sqlite3.h

@@ -21,6 +21,7 @@ targets:
         NSBonjourServices:
           - _owt-share._tcp
           - _owt-share._udp
+        ITSAppUsesNonExemptEncryption: false
     sources:
       - path: OfflineWorkoutTracker/App
       - path: OfflineWorkoutTracker/Bridge/OwtBridge.swift
@@ -29,6 +30,7 @@ targets:
       - path: OfflineWorkoutTracker/Models
       - path: OfflineWorkoutTracker/Views
       - path: OfflineWorkoutTracker/Assets.xcassets
+      - path: OfflineWorkoutTracker/PrivacyInfo.xcprivacy
       # C++ core library sources (referenced, not copied)
       - path: ../lib/src/database.cpp
         buildPhase: sources
@@ -49,7 +51,8 @@ targets:
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.timsippell.owt
-        DEVELOPMENT_TEAM: 3LRV32PC6Q
+        DEVELOPMENT_TEAM: 429T5NT2M7
+        TARGETED_DEVICE_FAMILY: "1"
         CODE_SIGN_STYLE: Automatic
         INFOPLIST_GENERATION_MODE: GeneratedFile
         MARKETING_VERSION: "1.0.0"
