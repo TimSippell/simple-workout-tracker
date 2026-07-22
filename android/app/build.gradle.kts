@@ -15,7 +15,7 @@ fun localProp(env: String, prop: String, default: String = "") =
 
 android {
     namespace = "com.timsippell.owt"
-    compileSdk = 35
+    compileSdk = 36
 
     signingConfigs {
         create("release") {
@@ -29,7 +29,7 @@ android {
     defaultConfig {
         applicationId = "com.timsippell.owt"
         minSdk = 26
-        targetSdk = 35
+        targetSdk = 36
         versionCode = 9
         versionName = "1.3.3"
 
