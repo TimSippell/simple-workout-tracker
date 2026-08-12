@@ -156,13 +156,15 @@ struct WorkoutView: View {
                 .onLongPressGesture { editingSet = set }
             }
         }
-        .toolbar {
-            ToolbarItem(placement: .bottomBar) {
-                Button { showAddSet = true } label: {
-                    Image(systemName: "plus.circle.fill")
-                        .font(.title)
-                }
+        .safeAreaInset(edge: .bottom) {
+            Button { showAddSet = true } label: {
+                Label("Add Set", systemImage: "plus.circle.fill")
+                    .font(.headline)
+                    .frame(maxWidth: .infinity)
             }
+            .buttonStyle(.borderedProminent)
+            .padding(.horizontal)
+            .padding(.bottom, 8)
         }
     }
 
