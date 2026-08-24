@@ -22,6 +22,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.timsippell.owt.bridge.OwtBridge
+import com.timsippell.owt.ui.components.EditSetDialog
 import java.time.LocalDate
 import java.time.YearMonth
 import java.time.format.DateTimeFormatter
@@ -37,6 +38,9 @@ fun HistoryScreen() {
     var workouts by remember { mutableStateOf(OwtBridge.listWorkouts()) }
     var currentMonth by remember { mutableStateOf(YearMonth.now()) }
     var selectedDate by remember { mutableStateOf<LocalDate?>(null) }
+    var editingSet by remember { mutableStateOf<OwtBridge.WorkoutSet?>(null) }
+    var setsRevision by remember { mutableStateOf(0) }
+    val exercises = remember { OwtBridge.listExercises() }
 
     val workoutDates = remember(workouts) {
         workouts.mapNotNull { parseDate(it.startedAt) }.toSet()
@@ -65,7 +69,6 @@ fun HistoryScreen() {
 
             HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp))
 
-            val exercises = remember { OwtBridge.listExercises() }
             var expandedWorkoutId by remember { mutableStateOf<Long?>(null) }
 
             LazyColumn(
@@ -76,13 +79,13 @@ fun HistoryScreen() {
                     val isExpanded = expandedWorkoutId == workout.id
 
                     Card(
-                        modifier = Modifier.fillMaxWidth().clickable {
-                            expandedWorkoutId = if (isExpanded) null else workout.id
-                        }
+                        modifier = Modifier.fillMaxWidth()
                     ) {
                         Column(modifier = Modifier.padding(16.dp)) {
                             Row(
-                                modifier = Modifier.fillMaxWidth(),
+                                modifier = Modifier.fillMaxWidth().clickable {
+                                    expandedWorkoutId = if (isExpanded) null else workout.id
+                                },
                                 verticalAlignment = Alignment.CenterVertically
                             ) {
                                 Column(modifier = Modifier.weight(1f)) {
@@ -108,7 +111,7 @@ fun HistoryScreen() {
                             }
 
                             AnimatedVisibility(visible = isExpanded) {
-                                val sets = remember(workout.id) {
+                                val sets = remember(workout.id, setsRevision) {
                                     OwtBridge.getSetsForWorkout(workout.id)
                                 }
                                 Column(
@@ -120,7 +123,9 @@ fun HistoryScreen() {
                                     sets.forEach { set ->
                                         val name = exercises.find { it.id == set.exerciseId }?.name ?: "Unknown"
                                         Row(
-                                            modifier = Modifier.fillMaxWidth(),
+                                            modifier = Modifier
+                                                .fillMaxWidth()
+                                                .clickable { editingSet = set },
                                             horizontalArrangement = Arrangement.SpaceBetween
                                         ) {
                                             Text(name, style = MaterialTheme.typography.bodyMedium)
@@ -156,6 +161,19 @@ fun HistoryScreen() {
                 }
             }
         }
+    }
+
+    editingSet?.let { set ->
+        EditSetDialog(
+            set = set,
+            exercises = exercises,
+            onDismiss = { editingSet = null },
+            onConfirm = { reps, weight, rpe, durationSecs, restSecs ->
+                OwtBridge.updateSet(set.id, reps, AppSettings.toStorageWeight(weight, context), rpe, durationSecs, restSecs)
+                setsRevision++
+                editingSet = null
+            }
+        )
     }
 }
 
