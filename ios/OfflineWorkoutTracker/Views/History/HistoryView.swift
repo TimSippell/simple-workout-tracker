@@ -113,6 +113,7 @@ private struct WorkoutSetsDetail: View {
     let exercises: [Exercise]
 
     @State private var sets: [WorkoutSet] = []
+    @State private var editingSet: WorkoutSet?
 
     var body: some View {
         VStack(alignment: .leading, spacing: 4) {
@@ -130,11 +131,27 @@ private struct WorkoutSetsDetail: View {
                         .font(.caption)
                         .foregroundStyle(.secondary)
                 }
+                .contentShape(Rectangle())
+                .onTapGesture { editingSet = set }
             }
         }
         .onAppear {
-            sets = OwtBridge.shared.getSetsForWorkout(workoutId: workoutId)
+            refreshSets()
         }
+        .sheet(item: $editingSet) { set in
+            EditSetSheet(set: set, exercises: exercises) { reps, weight, rpe, durationSecs, restSecs in
+                OwtBridge.shared.updateSet(
+                    id: set.id, reps: reps,
+                    weight: OwtBridge.shared.toStorageWeight(weight),
+                    rpe: rpe, durationSecs: durationSecs, restSecs: restSecs
+                )
+                refreshSets()
+            }
+        }
+    }
+
+    private func refreshSets() {
+        sets = OwtBridge.shared.getSetsForWorkout(workoutId: workoutId)
     }
 }
 
