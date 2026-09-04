@@ -19,6 +19,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.navigation.NavController
 import com.timsippell.owt.bridge.OwtBridge
 import com.timsippell.owt.ui.components.EditSetDialog
@@ -37,7 +38,8 @@ fun WorkoutScreen(navController: NavController) {
     var showAddSet by remember { mutableStateOf(false) }
     var showTemplatePicker by remember { mutableStateOf(false) }
     var editingSet by remember { mutableStateOf<OwtBridge.WorkoutSet?>(null) }
-    var completedSets by remember { mutableStateOf(setOf<Long>()) }
+    var completedSetIds by rememberSaveable { mutableStateOf("") }
+    val completedSets = if (completedSetIds.isEmpty()) emptySet() else completedSetIds.split(",").map { it.toLong() }.toSet()
     var showCancelDialog by remember { mutableStateOf(false) }
     var showFinishDialog by remember { mutableStateOf(false) }
 
@@ -72,7 +74,7 @@ fun WorkoutScreen(navController: NavController) {
                                 OwtBridge.finishWorkout(activeWorkoutId!!)
                                 activeWorkoutId = null
                                 sets = emptyList()
-                                completedSets = emptySet()
+                                completedSetIds = ""
                                 showActive = false
                             }
                         }) {
@@ -153,10 +155,11 @@ fun WorkoutScreen(navController: NavController) {
                             weightUnit = weightUnit,
                             completed = set.id in completedSets,
                             onClick = {
-                                completedSets = if (set.id in completedSets)
+                                val updated = if (set.id in completedSets)
                                     completedSets - set.id
                                 else
                                     completedSets + set.id
+                                completedSetIds = updated.joinToString(",")
                             },
                             onLongClick = { editingSet = set }
                         )
@@ -185,7 +188,7 @@ fun WorkoutScreen(navController: NavController) {
                     activeWorkoutId?.let { OwtBridge.deleteWorkout(it) }
                     activeWorkoutId = null
                     sets = emptyList()
-                    completedSets = emptySet()
+                    completedSetIds = ""
                     showActive = false
                     showCancelDialog = false
                 },
@@ -210,7 +213,7 @@ fun WorkoutScreen(navController: NavController) {
                     OwtBridge.finishWorkout(activeWorkoutId!!)
                     activeWorkoutId = null
                     sets = emptyList()
-                    completedSets = emptySet()
+                    completedSetIds = ""
                     showActive = false
                     showFinishDialog = false
                 }) { Text("Finish") }

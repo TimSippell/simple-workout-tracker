@@ -472,20 +472,19 @@ int64_t Repository::add_template_set(const TemplateSet& s) {
 }
 
 void Repository::update_template_set(const TemplateSet& s) {
-    const char* sql = "UPDATE template_set SET exercise_id=?, set_order=?, reps=?, rpe=?, rest_secs=?, duration_secs=?, tempo=?, notes=? WHERE id=?";
+    const char* sql = "UPDATE template_set SET reps=?, weight=?, rpe=?, rest_secs=?, duration_secs=?, tempo=?, notes=? WHERE id=?";
     sqlite3_stmt* raw = nullptr;
     sqlite3_prepare_v2(db_.handle(), sql, -1, &raw, nullptr);
     StmtGuard stmt{raw};
 
-    sqlite3_bind_int64(raw, 1, s.exercise_id);
-    sqlite3_bind_int(raw, 2, s.set_order);
-    bind_optional_int(raw, 3, s.reps);
-    bind_optional_double(raw, 4, s.rpe);
-    bind_optional_int(raw, 5, s.rest_secs);
-    bind_optional_int(raw, 6, s.duration_secs);
-    bind_text(raw, 7, s.tempo);
-    bind_text(raw, 8, s.notes);
-    sqlite3_bind_int64(raw, 9, s.id);
+    bind_optional_int(raw, 1, s.reps);
+    bind_optional_double(raw, 2, s.weight);
+    bind_optional_double(raw, 3, s.rpe);
+    bind_optional_int(raw, 4, s.rest_secs);
+    bind_optional_int(raw, 5, s.duration_secs);
+    bind_text(raw, 6, s.tempo);
+    bind_text(raw, 7, s.notes);
+    sqlite3_bind_int64(raw, 8, s.id);
     sqlite3_step(raw);
 }
 

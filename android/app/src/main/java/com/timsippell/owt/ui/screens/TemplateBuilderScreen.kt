@@ -16,6 +16,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.foundation.clickable
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.timsippell.owt.bridge.OwtBridge
@@ -29,6 +30,7 @@ fun TemplateBuilderScreen(templateId: Long?, navController: NavController) {
     var sets by remember { mutableStateOf(OwtBridge.getTemplateSets(templateId)) }
     val exercises = remember { OwtBridge.listExercises() }
     var showAddDialog by remember { mutableStateOf(false) }
+    var editingSet by remember { mutableStateOf<OwtBridge.TemplateSet?>(null) }
 
     Scaffold(
         topBar = {
@@ -60,6 +62,7 @@ fun TemplateBuilderScreen(templateId: Long?, navController: NavController) {
                     set = set,
                     isFirst = index == 0,
                     isLast = index == sets.size - 1,
+                    onEdit = { editingSet = set },
                     onMoveUp = {
                         val prev = sets[index - 1]
                         OwtBridge.swapTemplateSetOrder(set.id, set.order, prev.id, prev.order)
@@ -88,6 +91,24 @@ fun TemplateBuilderScreen(templateId: Long?, navController: NavController) {
         }
     }
 
+    editingSet?.let { set ->
+        val exerciseName = exercises.find { it.id == set.exerciseId }?.name ?: "Unknown"
+        EditTemplateSetDialog(
+            exerciseName = exerciseName,
+            set = set,
+            onDismiss = { editingSet = null },
+            onConfirm = { reps, weight, rpe, durationSecs, restSecs ->
+                OwtBridge.updateTemplateSet(
+                    set.id, reps,
+                    AppSettings.toStorageWeight(weight, context),
+                    rpe, durationSecs, restSecs
+                )
+                sets = OwtBridge.getTemplateSets(templateId)
+                editingSet = null
+            }
+        )
+    }
+
     if (showAddDialog) {
         AddTemplateSetDialog(
             exercises = exercises,
@@ -112,13 +133,14 @@ private fun TemplateSetCard(
     set: OwtBridge.TemplateSet,
     isFirst: Boolean,
     isLast: Boolean,
+    onEdit: () -> Unit,
     onMoveUp: () -> Unit,
     onMoveDown: () -> Unit,
     onDelete: () -> Unit
 ) {
     val context = LocalContext.current
     val weightUnit = remember { AppSettings.getWeightUnit(context) }
-    Card(modifier = Modifier.fillMaxWidth()) {
+    Card(modifier = Modifier.fillMaxWidth().clickable { onEdit() }) {
         Row(
             modifier = Modifier.padding(start = 16.dp, top = 4.dp, bottom = 4.dp, end = 4.dp).fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically
@@ -249,6 +271,51 @@ private fun AddTemplateSetDialog(
                 },
                 enabled = selectedExercise != null
             ) { Text("Add") }
+        },
+        dismissButton = { TextButton(onClick = onDismiss) { Text("Cancel") } }
+    )
+}
+
+@Composable
+private fun EditTemplateSetDialog(
+    exerciseName: String,
+    set: OwtBridge.TemplateSet,
+    onDismiss: () -> Unit,
+    onConfirm: (Int, Double, Double, Int, Int) -> Unit
+) {
+    val context = LocalContext.current
+    val weightUnit = remember { AppSettings.getWeightUnit(context) }
+    var reps by remember { mutableStateOf(if (set.reps > 0) set.reps.toString() else "") }
+    val displayWeight = if (set.weight > 0) AppSettings.toDisplayWeight(set.weight, context) else 0.0
+    var weight by remember { mutableStateOf(if (set.weight > 0) "%.1f".format(displayWeight) else "") }
+    var duration by remember { mutableStateOf(if (set.durationSecs > 0) set.durationSecs.toString() else "") }
+    var rest by remember { mutableStateOf(if (set.restSecs > 0) set.restSecs.toString() else "") }
+    var rpe by remember { mutableStateOf(if (set.rpe > 0) set.rpe.toString() else "") }
+
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text(exerciseName) },
+        text = {
+            Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                OutlinedTextField(value = reps, onValueChange = { reps = it }, label = { Text("Reps") }, keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number))
+                OutlinedTextField(value = weight, onValueChange = { weight = it }, label = { Text("Weight ($weightUnit)") }, keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal))
+                OutlinedTextField(value = duration, onValueChange = { duration = it }, label = { Text("Duration (secs)") }, keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number))
+                OutlinedTextField(value = rest, onValueChange = { rest = it }, label = { Text("Rest (secs)") }, keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number))
+                OutlinedTextField(value = rpe, onValueChange = { rpe = it }, label = { Text("RPE (optional)") }, keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal))
+            }
+        },
+        confirmButton = {
+            TextButton(
+                onClick = {
+                    onConfirm(
+                        reps.toIntOrNull() ?: 0,
+                        weight.toDoubleOrNull() ?: 0.0,
+                        rpe.toDoubleOrNull() ?: 0.0,
+                        duration.toIntOrNull() ?: 0,
+                        rest.toIntOrNull() ?: 0
+                    )
+                }
+            ) { Text("Save") }
         },
         dismissButton = { TextButton(onClick = onDismiss) { Text("Cancel") } }
     )

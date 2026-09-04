@@ -289,6 +289,21 @@ Java_com_timsippell_owt_bridge_OwtBridge_nativeGetTemplateSets(JNIEnv* env, jobj
 }
 
 JNIEXPORT void JNICALL
+Java_com_timsippell_owt_bridge_OwtBridge_nativeUpdateTemplate(JNIEnv* env, jobject,
+        jlong id, jstring name, jstring notes) {
+    if (!g_repo) return;
+    sf::WorkoutTemplate t;
+    t.id = id;
+    const char* n = env->GetStringUTFChars(name, nullptr);
+    const char* nt = env->GetStringUTFChars(notes, nullptr);
+    t.name = n;
+    t.notes = nt;
+    g_repo->update_template(t);
+    env->ReleaseStringUTFChars(name, n);
+    env->ReleaseStringUTFChars(notes, nt);
+}
+
+JNIEXPORT void JNICALL
 Java_com_timsippell_owt_bridge_OwtBridge_nativeDeleteTemplate(JNIEnv*, jobject, jlong id) {
     if (g_repo) g_repo->delete_template(id);
 }
@@ -307,6 +322,20 @@ Java_com_timsippell_owt_bridge_OwtBridge_nativeAddTemplateSet(JNIEnv*, jobject,
     if (durationSecs > 0) s.duration_secs = durationSecs;
     if (restSecs > 0) s.rest_secs = restSecs;
     return g_repo->add_template_set(s);
+}
+
+JNIEXPORT void JNICALL
+Java_com_timsippell_owt_bridge_OwtBridge_nativeUpdateTemplateSet(JNIEnv*, jobject,
+        jlong id, jint reps, jdouble weight, jdouble rpe, jint durationSecs, jint restSecs) {
+    if (!g_repo) return;
+    sf::TemplateSet s;
+    s.id = id;
+    if (reps > 0) s.reps = reps;
+    if (weight > 0) s.weight = weight;
+    if (rpe > 0) s.rpe = rpe;
+    if (durationSecs > 0) s.duration_secs = durationSecs;
+    if (restSecs > 0) s.rest_secs = restSecs;
+    g_repo->update_template_set(s);
 }
 
 JNIEXPORT void JNICALL

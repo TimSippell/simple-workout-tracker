@@ -120,9 +120,13 @@ object OwtBridge {
         nativeListTemplates()?.toList() ?: emptyList()
     fun getTemplateSets(templateId: Long): List<TemplateSet> =
         nativeGetTemplateSets(templateId)?.toList() ?: emptyList()
+    fun updateTemplate(id: Long, name: String, notes: String = "") =
+        nativeUpdateTemplate(id, name, notes)
     fun deleteTemplate(id: Long) = nativeDeleteTemplate(id)
     fun addTemplateSet(templateId: Long, exerciseId: Long, order: Int, reps: Int, weight: Double, rpe: Double, durationSecs: Int = 0, restSecs: Int = 0): Long =
         nativeAddTemplateSet(templateId, exerciseId, order, reps, weight, rpe, durationSecs, restSecs)
+    fun updateTemplateSet(id: Long, reps: Int, weight: Double, rpe: Double, durationSecs: Int = 0, restSecs: Int = 0) =
+        nativeUpdateTemplateSet(id, reps, weight, rpe, durationSecs, restSecs)
     fun deleteTemplateSet(id: Long) = nativeDeleteTemplateSet(id)
     fun swapTemplateSetOrder(idA: Long, orderA: Int, idB: Long, orderB: Int) =
         nativeSwapTemplateSetOrder(idA, orderA, idB, orderB)
@@ -172,8 +176,10 @@ object OwtBridge {
     private external fun nativeCreateTemplate(name: String, notes: String): Long
     private external fun nativeListTemplates(): Array<WorkoutTemplate>?
     private external fun nativeGetTemplateSets(templateId: Long): Array<TemplateSet>?
+    private external fun nativeUpdateTemplate(id: Long, name: String, notes: String)
     private external fun nativeDeleteTemplate(id: Long)
     private external fun nativeAddTemplateSet(templateId: Long, exerciseId: Long, order: Int, reps: Int, weight: Double, rpe: Double, durationSecs: Int, restSecs: Int): Long
+    private external fun nativeUpdateTemplateSet(id: Long, reps: Int, weight: Double, rpe: Double, durationSecs: Int, restSecs: Int)
     private external fun nativeDeleteTemplateSet(id: Long)
     private external fun nativeSwapTemplateSetOrder(idA: Long, orderA: Int, idB: Long, orderB: Int)
     private external fun nativeStartWorkoutFromTemplate(templateId: Long, name: String): Long

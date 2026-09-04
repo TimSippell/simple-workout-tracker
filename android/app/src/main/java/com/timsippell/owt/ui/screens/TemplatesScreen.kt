@@ -8,6 +8,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -21,6 +22,7 @@ import com.timsippell.owt.bridge.OwtBridge
 fun TemplatesScreen(navController: NavController) {
     var templates by remember { mutableStateOf(OwtBridge.listTemplates()) }
     var showCreateDialog by remember { mutableStateOf(false) }
+    var renamingTemplate by remember { mutableStateOf<OwtBridge.WorkoutTemplate?>(null) }
     Scaffold(
         topBar = {
             TopAppBar(
@@ -49,6 +51,7 @@ fun TemplatesScreen(navController: NavController) {
                     onClick = {
                         navController.navigate("template_builder/${template.id}")
                     },
+                    onRename = { renamingTemplate = template },
                     onDelete = {
                         OwtBridge.deleteTemplate(template.id)
                         templates = OwtBridge.listTemplates()
@@ -78,6 +81,18 @@ fun TemplatesScreen(navController: NavController) {
         }
     }
 
+    renamingTemplate?.let { template ->
+        RenameTemplateDialog(
+            currentName = template.name,
+            onDismiss = { renamingTemplate = null },
+            onConfirm = { newName ->
+                OwtBridge.updateTemplate(template.id, newName, template.notes)
+                templates = OwtBridge.listTemplates()
+                renamingTemplate = null
+            }
+        )
+    }
+
     if (showCreateDialog) {
         CreateTemplateDialog(
             onDismiss = { showCreateDialog = false },
@@ -97,11 +112,12 @@ internal fun seedDefaultTemplates() = OwtBridge.seedDefaultTemplates()
 private fun TemplateCard(
     template: OwtBridge.WorkoutTemplate,
     onClick: () -> Unit,
+    onRename: () -> Unit,
     onDelete: () -> Unit
 ) {
     Card(modifier = Modifier.fillMaxWidth().clickable(onClick = onClick)) {
         Row(
-            modifier = Modifier.padding(16.dp).fillMaxWidth(),
+            modifier = Modifier.padding(start = 16.dp, top = 4.dp, bottom = 4.dp, end = 4.dp).fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically
         ) {
             Column(modifier = Modifier.weight(1f)) {
@@ -110,6 +126,9 @@ private fun TemplateCard(
                     "${template.setCount} sets",
                     style = MaterialTheme.typography.bodySmall
                 )
+            }
+            IconButton(onClick = onRename) {
+                Icon(Icons.Default.Edit, contentDescription = "Rename")
             }
             IconButton(onClick = onDelete) {
                 Icon(Icons.Default.Delete, contentDescription = "Delete")
@@ -136,6 +155,34 @@ private fun CreateTemplateDialog(onDismiss: () -> Unit, onConfirm: (String) -> U
         confirmButton = {
             TextButton(onClick = { onConfirm(name) }, enabled = name.isNotBlank()) {
                 Text("Create")
+            }
+        },
+        dismissButton = { TextButton(onClick = onDismiss) { Text("Cancel") } }
+    )
+}
+
+@Composable
+private fun RenameTemplateDialog(
+    currentName: String,
+    onDismiss: () -> Unit,
+    onConfirm: (String) -> Unit
+) {
+    var name by remember { mutableStateOf(currentName) }
+
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text("Rename Template") },
+        text = {
+            OutlinedTextField(
+                value = name,
+                onValueChange = { name = it },
+                label = { Text("Template name") },
+                singleLine = true
+            )
+        },
+        confirmButton = {
+            TextButton(onClick = { onConfirm(name) }, enabled = name.isNotBlank()) {
+                Text("Rename")
             }
         },
         dismissButton = { TextButton(onClick = onDismiss) { Text("Cancel") } }
