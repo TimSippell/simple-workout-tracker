@@ -30,8 +30,8 @@ android {
         applicationId = "com.timsippell.owt"
         minSdk = 26
         targetSdk = 36
-        versionCode = 11
-        versionName = "1.3.4"
+        versionCode = 12
+        versionName = "1.3.5"
 
         ndk {
             abiFilters += listOf("arm64-v8a", "x86_64")
@@ -47,8 +47,12 @@ android {
 
     buildTypes {
         release {
-            isMinifyEnabled = false
-            proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"))
+            isMinifyEnabled = true
+            isShrinkResources = true
+            proguardFiles(
+                getDefaultProguardFile("proguard-android-optimize.txt"),
+                "proguard-rules.pro"
+            )
             signingConfig = signingConfigs.getByName("release")
         }
     }
